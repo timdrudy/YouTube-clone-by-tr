@@ -13,6 +13,8 @@ import moment from "moment";
 const PlayVideo = ({videoId}) => {
 
 const [apiData, setApiData] = useState(null);
+const [channelData, setChannelData] = useState(null);
+const [commentData, setCommentData] = useState([]);
 
 const fetchVideoData = async () => {
     //Fetching Videos Data
@@ -20,9 +22,23 @@ const fetchVideoData = async () => {
     await fetch(videoDetails_url).then(res=>res.json()).then(data => setApiData(data.items[0]));
 }
 
+const fetchOtherData = async () => {
+    //Fetching Channel Data
+    const channelData_url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${apiData.snippet.channelId}&key=${API_KEY}`;
+    await fetch(channelData_url).then(res=>res.json()).then(data=>setChannelData(data.items[0]))
+
+    //Fetching Comment Data
+    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&videoId=${videoId}&key=${API_KEY}`;
+    await fetch(comment_url).then(res=>res.json()).then(data=>setCommentData(data.items))
+}
+
 useEffect(()=> {
     fetchVideoData();
 },[])
+
+useEffect(()=>{
+    fetchOtherData();
+},[apiData])
 
   return (
     <div className="play-video">
@@ -39,10 +55,10 @@ useEffect(()=> {
         <p>{apiData?value_converter(apiData.statistics.viewCount):"16K"} Views &bull; {apiData?moment(apiData.snippet.publishedAt).fromNow():""}</p>
         <div>
           <span>
-            <img src={like} alt="" /> 125
+            <img src={like} alt="" /> {apiData?value_converter(apiData.statistics.likeCount):155}
           </span>
           <span>
-            <img src={dislike} alt="" /> 2
+            <img src={dislike} alt="" /> 
           </span>
           <span>
             <img src={share} alt="" /> Share
@@ -54,92 +70,19 @@ useEffect(()=> {
       </div>
       <hr />
       <div className="publisher">
-        <img src={jack} alt="" />
+        <img src={channelData?channelData.snippet.thumbnails.default.url:""} alt="" />
         <div>
-          <p>GreatStack</p>
-          <span>1M Subscribers</span>
+          <p>{apiData?apiData.snippet.channelTitle:""}</p>
+          <span>{channelData?value_converter(channelData.statistics.subscriberCount):"1M"} Subscribers</span>
         </div>
         <button>Subscribe</button>
       </div>
       <div className="vid-description">
-        <p>This Channel Makes Learning Easy</p>
         <p>
-          Subscribe to GreatStack to Watch More Tutorials on Web Development
+            {apiData?apiData.snippet.description.slice(0,250):"Description Here"}
         </p>
         <hr />
-        <h4>130 Comments</h4>
-        <div className="comment">
-          <img src={user_profile} alt="" />
-          <div>
-            <h3>
-              Jack Nicholson<span> 1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a variety of information and
-              community of interconnected networks using standardized
-              communication protocols.
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="" />
-              <span>244</span>
-              <img src={dislike} alt="" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="" />
-          <div>
-            <h3>
-              Jack Nicholson<span> 1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a variety of information and
-              community of interconnected networks using standardized
-              communication protocols.
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="" />
-              <span>244</span>
-              <img src={dislike} alt="" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="" />
-          <div>
-            <h3>
-              Jack Nicholson<span> 1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a variety of information and
-              community of interconnected networks using standardized
-              communication protocols.
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="" />
-              <span>244</span>
-              <img src={dislike} alt="" />
-            </div>
-          </div>
-        </div>
-        <div className="comment">
-          <img src={user_profile} alt="" />
-          <div>
-            <h3>
-              Jack Nicholson<span> 1 day ago</span>
-            </h3>
-            <p>
-              A global computer network providing a variety of information and
-              community of interconnected networks using standardized
-              communication protocols.
-            </p>
-            <div className="comment-action">
-              <img src={like} alt="" />
-              <span>244</span>
-              <img src={dislike} alt="" />
-            </div>
-          </div>
-        </div>
+        <h4>{apiData?value_converter(apiData.statistics.commentCount):102} Comments</h4>
         <div className="comment">
           <img src={user_profile} alt="" />
           <div>
