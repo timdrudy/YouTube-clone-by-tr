@@ -28,7 +28,7 @@ const fetchOtherData = async () => {
     await fetch(channelData_url).then(res=>res.json()).then(data=>setChannelData(data.items[0]))
 
     //Fetching Comment Data
-    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%&maxResults=50&videoId=${videoId}&key=${API_KEY}`;
+    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=50&videoId=${videoId}&key=${API_KEY}`;
     await fetch(comment_url).then(res=>res.json()).then(data=>setCommentData(data.items))
 }
 
