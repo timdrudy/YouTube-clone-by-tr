@@ -28,7 +28,7 @@ const fetchOtherData = async () => {
     await fetch(channelData_url).then(res=>res.json()).then(data=>setChannelData(data.items[0]))
 
     //Fetching Comment Data
-    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&videoId=${videoId}&key=${API_KEY}`;
+    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%&maxResults=50&videoId=${videoId}&key=${API_KEY}`;
     await fetch(comment_url).then(res=>res.json()).then(data=>setCommentData(data.items))
 }
 
@@ -83,24 +83,27 @@ useEffect(()=>{
         </p>
         <hr />
         <h4>{apiData?value_converter(apiData.statistics.commentCount):102} Comments</h4>
-        <div className="comment">
-          <img src={user_profile} alt="" />
+        {commentData.map((item,index)=> {
+
+            return (
+        <div key={index} className="comment">
+          <img src={item.snippet.topLevelComment.snippet.authorProfileImageUrl} alt="" />
           <div>
             <h3>
-              Jack Nicholson<span> 1 day ago</span>
+              {item.snippet.topLevelComment.snippet.authorDisplayName}<span> 1 day ago</span>
             </h3>
             <p>
-              A global computer network providing a variety of information and
-              community of interconnected networks using standardized
-              communication protocols.
+              {item.snippet.topLevelComment.snippet.textDisplay}
             </p>
             <div className="comment-action">
               <img src={like} alt="" />
-              <span>244</span>
+              <span>{value_converter(item.snippet.topLevelComment.snippet.likeCount)}</span>
               <img src={dislike} alt="" />
             </div>
           </div>
         </div>
+            )
+        })}
       </div>
     </div>
   );
